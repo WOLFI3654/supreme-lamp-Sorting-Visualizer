@@ -1,7 +1,7 @@
 let amt = 100;
-
+let currentSort = 'Interactive Mode';
 let numbers = [];
-let sortBtn, shuffleBtn,panicBtn;
+let sortBtn, shuffleBtn,panicBtn,tourBtn;
 let sel,slider,vtype,abs,amtSlider,amtDisplay;
 let algorithms = {"Bubble Sort":(a)=>bubbleSort(a),
 "Insertion Sort":(a)=>insertionSort(a),
@@ -48,6 +48,17 @@ function setup() {
   vtype = createCheckbox('Spreading');
   abs = createCheckbox('Absolute');
   amtDisplay = createP('100');
+  tourBtn = createButton('Take the Tour');
+  tourBtn.mousePressed(async function(){
+    for(let algo in algorithms){
+      currentSort = 'Shuffling...';
+      await shuffleSort(numbers);
+      currentSort = algo;
+      await sleep();
+      await algorithms[algo](numbers);
+    }
+    currentSort = 'Interactive Mode';
+  });
 }
 function panic(){
   numbers = [];
@@ -59,6 +70,8 @@ let step;
 
 function draw() {
   background(0);
+  textSize(16);
+  text(currentSort,5,16);
   translate(width / 2, height / 2);
   noStroke();
   for (let i = 0; i < TWO_PI; i += step) {
