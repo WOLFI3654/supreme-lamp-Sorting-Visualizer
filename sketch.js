@@ -1,35 +1,60 @@
+let amt = 100;
+
 let numbers = [];
-let sortBtn, shuffleBtn;
-let sel,slider;
+let sortBtn, shuffleBtn,panicBtn;
+let sel,slider,vtype,abs,amtSlider,amtDisplay;
 let algorithms = {"Bubble Sort":(a)=>bubbleSort(a),
-                  "Insertion Sort":(a)=>insertionSort(a),
-                  "Heap Sort":(a)=>heapSort(a),
-                  "Merge Sort":(a)=>mergeSort(a),
-                  "Quick Sort":(a)=>quickSort(a,0,numbers.length-1),
-                  "LSD Sort Base 2":(a)=>sortLSD(a,2),
-                  "LSD Sort Base 4":(a)=>sortLSD(a,4),
-                  "LSD Sort Base 10":(a)=>sortLSD(a,10)};
+"Insertion Sort":(a)=>insertionSort(a),
+"Heap Sort":(a)=>heapSort(a),
+"Merge Sort":(a)=>mergeSort(a),
+"Comb Sort":(a)=>combSort(a),
+"Shell Sort":(a)=>shellSort(a),
+"Gnome Sort":(a)=>gnomeSort(a),
+"Count Sort":(a)=>countSort(a,0,a.length),
+"Stooge Sort":(a)=>stoogeSort(a),
+"Pancake Sort":(a)=>pancakeSort(a),
+"Sleep Sort":(a)=>sleepSort(a),
+"Cocktail Sort":(a)=>cocktailSort(a),
+"Quick Sort":(a)=>quickSort(a,0,numbers.length-1),
+"LSD Sort Base 2":(a)=>sortLSD(a,2),
+"LSD Sort Base 4":(a)=>sortLSD(a,4),
+"LSD Sort Base 10":(a)=>sortLSD(a,10)};
 function setup() {
   createCanvas(400, 400);
-  for (let i = 0; i < 500; i++) numbers.push(i);
-  step = TWO_PI / numbers.length;
-  colorMode(HSB, numbers.length);
+  panic();
+  panicBtn = createButton('panic');
+  panicBtn.mousePressed(panic);
   sortBtn = createButton('sort');
   sortBtn.mousePressed(function() {
     algorithms[sel.value()](numbers);
   });
   shuffleBtn = createButton('shuffle');
   shuffleBtn.mousePressed(function() {
-    shuffle(numbers, true);
+    shuffleSort(numbers);
   });
   sel = createSelect();
   for(let key in algorithms){
     sel.option(key);
   }
   slider = createSlider(0,10,1,0.01);
-
+  amtSlider = createSlider(5,1000,100,5);
+  amtSlider.mouseMoved(function(){
+    if(amt != amtSlider.value()){
+      amt = amtSlider.value();
+      amtDisplay.html(amt);
+      panic();
+    }
+  });
+  vtype = createCheckbox('Spreading');
+  abs = createCheckbox('Absolute');
+  amtDisplay = createP('100');
 }
-
+function panic(){
+  numbers = [];
+  for (let i = 0; i < amt; i++) numbers.push(i);
+  step = TWO_PI / numbers.length;
+  colorMode(HSB, numbers.length);
+}
 let step;
 
 function draw() {
@@ -41,7 +66,12 @@ function draw() {
     fill(numbers[index], numbers.length, numbers.length);
     beginShape(TRIANGLES);
     vertex(0, 0);
-    let len = 100+(index-numbers[index]);
+    let len = 100;
+    if(vtype.checked()){
+      let add =(index-numbers[index]);
+      if(abs.checked()) add = Math.abs(add);
+      len+=add;
+    }
     vertex(cos(i) * len, sin(i) * len);
     vertex(cos(i + step) * len, sin(i + step) * len);
     //point(cos(i)*100,sin(i)*100);
@@ -51,6 +81,6 @@ function draw() {
 
 function sleep() {
   let ms = slider.value();
-if(ms <= 0) return null;
-    return new Promise(resolve => setTimeout(resolve, ms));
+  if(ms <= 0) return null;
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
